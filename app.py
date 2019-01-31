@@ -1,44 +1,142 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template, request
 import requests
 
 app = Flask(__name__)
 
+app.config['access_token'] = 'EAACcz9Hkm2EBAGB5s4B6yFmCmzBKmlBteykwTovxExSM9pqnW5Psbblcg1yDcp8qd9T8Wp9a4EqscT2HeqTyGCBki5ykaa6Y7KjOIKsZCfMxi8EfAjZBYrdGdLJGexYhwOjhjTxaL1YvxoKff9MYcup40Ylx8kl30kjYENRQZDZD'
+
 
 @app.route('/')
 def hello_world():
-
-    return 'Home page'
-
-
-@app.route('/ad-account-detail')
-def ad_account_detail():
-    r = requests.get('https://graph.facebook.com/v3.2/act_319269675356107?access_token=EAACcz9Hkm2EBAGB5s4B6yFmCmzBKmlBteykwTovxExSM9pqnW5Psbblcg1yDcp8qd9T8Wp9a4EqscT2HeqTyGCBki5ykaa6Y7KjOIKsZCfMxi8EfAjZBYrdGdLJGexYhwOjhjTxaL1YvxoKff9MYcup40Ylx8kl30kjYENRQZDZD&fields=owner,age,account_status,agency_client_declaration,amount_spent,attribution_spec,balance,business,business_city,business_name,business_state,business_zip,created_time,currency,end_advertiser,end_advertiser_name,funding_source,user_role,user_tos_accepted').json()
-
-    return jsonify(r)
+    return render_template('index.html')
 
 
-@app.route('/custom-audience')
-def custom_audience():
+@app.route('/get-facebook-id-info', methods=['POST'])
+def get_facebook_id_info():
+    response = {}
+    search_ad_account_id = request.form['search']
+    if search_ad_account_id:
+        response = get_instagram_info(search_ad_account_id, response)
+        response = get_ad_pixel_info(search_ad_account_id, response)
+        response = promote_pages(search_ad_account_id, response)
+        response = get_applications(search_ad_account_id, response)
+        response = get_offline_conversion_data_sets(search_ad_account_id, response)
+        response = get_custom_audience(search_ad_account_id, response)
+
+    return jsonify(response)
+
+
+def get_instagram_info(search_ad_account_id, response):
     r = requests.get(
-        "https://graph.facebook.com/v3.2/act_319269675356107/customaudiences?access_token=EAACcz9Hkm2EBAGB5s4B6yFmCmzBKmlBteykwTovxExSM9pqnW5Psbblcg1yDcp8qd9T8Wp9a4EqscT2HeqTyGCBki5ykaa6Y7KjOIKsZCfMxi8EfAjZBYrdGdLJGexYhwOjhjTxaL1YvxoKff9MYcup40Ylx8kl30kjYENRQZDZD&fields=id,name").json()
+        "https://graph.facebook.com/v3.2/act_{}/instagram_accounts?access_token={}&fields=username,id".format(
+            search_ad_account_id,
+            app.config['access_token']
+        )).json()
 
-    return jsonify(r)
+    if 'data' in r:
+        instances = []
+        for i in (range(len(r['data']))):
+            instances.append({
+                'id': r['data'][i]['id'],
+                'username': r['data'][i]['username']
+            })
+
+        response['instagram'] = instances
+    return response
 
 
-@app.route('/instagram')
-def instagram():
+def get_ad_pixel_info(search_ad_account_id, response):
     r = requests.get(
-        "https://graph.facebook.com/v3.2/act_319269675356107/instagram_accounts?access_token=EAACcz9Hkm2EBAGB5s4B6yFmCmzBKmlBteykwTovxExSM9pqnW5Psbblcg1yDcp8qd9T8Wp9a4EqscT2HeqTyGCBki5ykaa6Y7KjOIKsZCfMxi8EfAjZBYrdGdLJGexYhwOjhjTxaL1YvxoKff9MYcup40Ylx8kl30kjYENRQZDZD").json()
+        "https://graph.facebook.com/v3.2/act_{}/adspixels?access_token={}&fields=id,name".format(
+            search_ad_account_id,
+            app.config['access_token']
+        )).json()
 
-    return jsonify(r)
+    if 'data' in r:
+        instances = []
+        for i in (range(len(r['data']))):
+            instances.append({
+                'id': r['data'][i]['id'],
+                'name': r['data'][i]['name']
+            })
+
+        response['ad_pixel'] = instances
+    return response
 
 
-@app.route('/ad-pixel')
-def ad_pixel():
+def promote_pages(search_ad_account_id, response):
     r = requests.get(
-        "https://graph.facebook.com/v3.2/act_319269675356107/adspixels?access_token=EAACcz9Hkm2EBAGB5s4B6yFmCmzBKmlBteykwTovxExSM9pqnW5Psbblcg1yDcp8qd9T8Wp9a4EqscT2HeqTyGCBki5ykaa6Y7KjOIKsZCfMxi8EfAjZBYrdGdLJGexYhwOjhjTxaL1YvxoKff9MYcup40Ylx8kl30kjYENRQZDZD&fields=id,name").json()
+        "https://graph.facebook.com/v3.2/act_{}/promote_pages?access_token={}".format(
+            search_ad_account_id,
+            app.config['access_token']
+        )).json()
 
-    return jsonify(r)
+    if 'data' in r:
+        instances = []
+        for i in (range(len(r['data']))):
+            instances.append({
+                'id': r['data'][i]['id'],
+                'name': r['data'][i]['name']
+            })
+
+        response['promote_pages'] = instances
+    return response
+
+
+def get_applications(search_ad_account_id, response):
+    r = requests.get(
+        "https://graph.facebook.com/v3.2/act_{}/applications?access_token={}&fields=name".format(
+            search_ad_account_id,
+            app.config['access_token']
+        )).json()
+
+    if 'data' in r:
+        instances = []
+        for i in (range(len(r['data']))):
+            instances.append({
+                'id': r['data'][i]['id'],
+                'name': r['data'][i]['name']
+            })
+
+        response['applications'] = instances
+    return response
+
+
+def get_offline_conversion_data_sets(search_ad_account_id, response):
+    r = requests.get(
+        "https://graph.facebook.com/v3.2/act_{}/offline_conversion_data_sets?access_token={}&fields=name".format(
+            search_ad_account_id,
+            app.config['access_token']
+        )).json()
+
+    if 'data' in r:
+        instances = []
+        for i in (range(len(r['data']))):
+            instances.append({
+                'id': r['data'][i]['id'],
+                'name': r['data'][i]['name']
+            })
+
+        response['offline_conversion_data'] = instances
+    return response
+
+
+def get_custom_audience(search_ad_account_id, response):
+    r = requests.get(
+        "https://graph.facebook.com/v3.2/act_{}/customaudiences?access_token={}&fields=id,name".format(
+            search_ad_account_id,
+            app.config['access_token']
+        )).json()
+    if 'data' in r:
+        instances = []
+        for i in (range(len(r['data']))):
+            instances.append({
+                'id': r['data'][i]['id'],
+                'name': r['data'][i]['name']
+            })
+
+        response['custom_audience'] = instances
+    return response
 
 
 if __name__ == '__main__':

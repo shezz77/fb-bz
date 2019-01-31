@@ -1,0 +1,82 @@
+<html>
+<head>
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" />
+</head>
+<body>
+
+<div class="container"><br><br>
+
+
+    <div class="form-group">
+        <label for="search">Search Ad Account :</label>
+        <input type="text" class="form-control" id="search"  placeholder="Enter Ad Account ID">
+        <small id="emailHelp" class="form-text text-muted">Press Enter For Search Ad Account ID</small>
+    </div>
+
+    <div id="data"></div>
+
+</div>
+
+<script type="text/javascript">
+
+    $('#search').keyup(function(event)
+    {
+
+        if(event.keyCode === 13){
+            var txt = $(this).val();
+            if(txt !== '')
+            {
+
+                $.ajax({
+                    url:"/get-facebook-id-info",
+                    method:"post",
+                    data:{search:$(this).val()},
+                    dataType:"text",
+                    success:function(data) {
+                        let parsedData = JSON.parse(data);
+                        let div = document.createElement('div');
+                        if (parsedData) {
+                            Object.keys(parsedData).forEach(function (key) {
+                                let h2 = document.createElement('h2');
+                                h2.innerHTML = key;
+                                {#console.log(parsedData[key]);#}
+                                div.appendChild(h2);
+                                if (parsedData[key].length > 0){
+                                    parsedData[key].forEach(function (obj) {
+                                        let h4 = document.createElement('h4');
+                                        Object.keys(obj).forEach(function (key3) {
+                                            let span1 = document.createElement('span');
+                                            let span2 = document.createElement('span');
+                                            span1.innerHTML = `${key} ${key3} : `;
+                                            span2.innerHTML = obj[key3];
+                                            h4.appendChild(span1);
+                                            h4.appendChild(span2);
+                                            h4.appendChild(document.createElement('br'));
+                                        });
+
+                                        div.appendChild(h4);
+                                    })
+                                }
+
+                            });
+                        } else  {
+                            div.innerHTML = "No Data found"
+                        }
+
+
+                        $("#data").html(div);
+                    }
+                });
+            }
+
+        }
+    });
+</script>
+</body>
+</html>
