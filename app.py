@@ -16,7 +16,7 @@ def hello_world():
 def get_facebook_id_info():
     response = {}
     search_ad_account_id = request.form['search']
-    q = request.form['q']
+    # q = request.form['q']
     if search_ad_account_id:
         response = get_instagram_info(search_ad_account_id, response)
         response = get_ad_pixel_info(search_ad_account_id, response)
@@ -24,8 +24,8 @@ def get_facebook_id_info():
         response = get_applications(search_ad_account_id, response)
         response = get_offline_conversion_data_sets(search_ad_account_id, response)
         response = get_custom_audience(search_ad_account_id, response)
-        if q:
-            response = get_target_audience(search_ad_account_id, response, q)
+        # if q:
+        #     response = get_target_audience(search_ad_account_id, response, q)
 
     return jsonify(response)
 
