@@ -11,7 +11,7 @@ app.config['facebook_business_api_url'] = 'https://graph.facebook.com/v3.2'
 POSTGRES = {
     'user': 'postgres',
     'pw': 'root',
-    'db': 'facebook_business',
+    'db': 'postgresql-concave-52656',
     'host': 'localhost',
     'port': '5432',
 }
