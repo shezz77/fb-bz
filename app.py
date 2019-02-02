@@ -122,41 +122,45 @@ def get_facebook_id_info():
 
 def save_user_info(data, facebook_id):
     user = User(facebook_id=facebook_id)
-    ad_account = AdAccount(ad_account_id=facebook_id)
-    user.ad_accounts.append(ad_account)
+    ad_account = AdAccount.query.filter_by(ad_account_id=facebook_id).first()
+    print(ad_account)
 
-    print(data['ad_pixel'])
-    if 'ad_pixel' in data:
-        for i in (range(len(data['ad_pixel']))):
-            ad_pixel = AdPixel(ad_pixel_id=data['ad_pixel'][i]['id'], ad_pixel_name=data['ad_pixel'][i]['name'])
-            ad_account.ad_pixels.append(ad_pixel)
+    if not ad_account:
+        ad_account = AdAccount(ad_account_id=facebook_id)
+        user.ad_accounts.append(ad_account)
 
-    if 'promote_pages' in data:
-        for i in (range(len(data['promote_pages']))):
-            application = FacebookPage(
-                page_id=data['promote_pages'][i]['id'],
-                page_name=data['promote_pages'][i]['name']
-            )
-            ad_account.facebook_pages.append(application)
+        print(data['ad_pixel'])
+        if 'ad_pixel' in data:
+            for i in (range(len(data['ad_pixel']))):
+                ad_pixel = AdPixel(ad_pixel_id=data['ad_pixel'][i]['id'], ad_pixel_name=data['ad_pixel'][i]['name'])
+                ad_account.ad_pixels.append(ad_pixel)
 
-    if 'instagram' in data:
-        for i in (range(len(data['instagram']))):
-            instagram = Instagram(
-                instagram_id=data['instagram'][i]['id'],
-                instagram_user_name=data['instagram'][i]['username']
-            )
-            ad_account.instagrams.append(instagram)
+        if 'promote_pages' in data:
+            for i in (range(len(data['promote_pages']))):
+                application = FacebookPage(
+                    page_id=data['promote_pages'][i]['id'],
+                    page_name=data['promote_pages'][i]['name']
+                )
+                ad_account.facebook_pages.append(application)
 
-    if 'applications' in data:
-        for i in (range(len(data['applications']))):
-            application = Application(
-                app_id=data['applications'][i]['id'],
-                app_name=data['applications'][i]['name']
-            )
-            ad_account.applications.append(application)
+        if 'instagram' in data:
+            for i in (range(len(data['instagram']))):
+                instagram = Instagram(
+                    instagram_id=data['instagram'][i]['id'],
+                    instagram_user_name=data['instagram'][i]['username']
+                )
+                ad_account.instagrams.append(instagram)
 
-    db.session.add(user)
-    db.session.commit()
+        if 'applications' in data:
+            for i in (range(len(data['applications']))):
+                application = Application(
+                    app_id=data['applications'][i]['id'],
+                    app_name=data['applications'][i]['name']
+                )
+                ad_account.applications.append(application)
+
+        db.session.add(user)
+        db.session.commit()
 
 
 def get_instagram_info(search_ad_account_id, response):
