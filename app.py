@@ -2,6 +2,7 @@ from flask import Flask, jsonify, render_template, request
 import requests
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, backref
+import json
 
 app = Flask(__name__)
 
@@ -19,15 +20,15 @@ POSTGRES = {
 app.config['SECRET_KEY'] = 'this_is_secret_key'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://cbymbzyosnqsdg:045013faa43ffb6466cd3b5e6fd0ae328930ac8f3d0de8dc96bdff79c74cbfe8@ec2-107-22-162-8.compute-1.amazonaws.com:5432/devgm2sk4pajqt'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://cbymbzyosnqsdg:045013faa43ffb6466cd3b5e6fd0ae328930ac8f3d0de8dc96bdff79c74cbfe8@ec2-107-22-162-8.compute-1.amazonaws.com:5432/devgm2sk4pajqt'
 
-# app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://{}:{}@{}:{}/{}".format(
-#     POSTGRES['user'],
-#     POSTGRES['pw'],
-#     POSTGRES['host'],
-#     POSTGRES['port'],
-#     POSTGRES['db']
-# )
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://{}:{}@{}:{}/{}".format(
+    POSTGRES['user'],
+    POSTGRES['pw'],
+    POSTGRES['host'],
+    POSTGRES['port'],
+    POSTGRES['db']
+)
 app.config['DEBUG'] = True
 
 db = SQLAlchemy(app)
@@ -99,9 +100,34 @@ class Application(db.Model):
         return '<Application %r>' % self.ad_account_id
 
 
+class FbTargeting(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    db_type = db.Column(db.String(50), nullable=True)
+    common_name = db.Column(db.String(50), nullable=True)
+    section_id = db.Column(db.String(50), nullable=True)
+    section_name = db.Column(db.String(50), nullable=True)
+    field_id = db.Column(db.String(50), nullable=True)
+    field_name = db.Column(db.String(50), nullable=True)
+    type = db.Column(db.String(50), nullable=True)
+    path = db.Column(db.String(50), nullable=True)
+    name = db.Column(db.String(50), nullable=True)
+    city_id = db.Column(db.String(50), nullable=True)
+    city = db.Column(db.String(50), nullable=True)
+    region_id = db.Column(db.String(50), nullable=True)
+    region = db.Column(db.String(50), nullable=True)
+    country_code = db.Column(db.String(50), nullable=True)
+    country_name = db.Column(db.String(50), nullable=True)
+    audience_size = db.Column(db.String(50), nullable=True)
+
+
 @app.route('/')
 def hello_world():
     return render_template('index.html')
+
+
+@app.route('/facebook-search', methods=['GET'])
+def facebook_search():
+    return render_template('facebook_search.html')
 
 
 @app.route('/get-facebook-id-info', methods=['POST'])
@@ -293,7 +319,6 @@ def get_target_audience(search_ad_account_id, response, q):
             app.config['access_token'],
             q
         )).json()
-    print(r)
     if 'data' in r:
         instances = []
         for i in (range(len(r['data']))):
@@ -306,6 +331,50 @@ def get_target_audience(search_ad_account_id, response, q):
 
         response['target_audience'] = instances
     return response
+
+
+@app.route('/search-city')
+def search_city():
+    query = request.args.get('term')
+    r = requests.get(
+        "https://graph.facebook.com/v2.10/search?access_token={}&type=adgeolocation&q={}".format(
+            app.config['access_token'],
+            query
+        )).json()
+
+    response = list()
+    if 'data' in r:
+        for i in range(len(r['data'])):
+            result = ''
+            if 'region' in r['data'][i]:
+                result = "{} , {}, {}".format(r['data'][i]['name'], r['data'][i]['region'], r['data'][i]['country_name'])
+            else:
+                result = "{} , {}".format(r['data'][i]['name'], r['data'][i]['country_name'])
+
+            response.append(result)
+
+    return json.dumps(response)
+
+
+@app.route('/search-interest')
+def search_interest():
+    q = request.args.get('term')
+    search_ad_account_id = '832687727072200'
+    r = requests.get(
+        "{}/act_{}/targetingsearch?access_token={}&q={}&fields=id,name,type,audience_size".format(
+            app.config['facebook_business_api_url'],
+            search_ad_account_id,
+            app.config['access_token'],
+            q
+        )).json()
+
+    response = list()
+    for i in range(len(r['data'])):
+        response.append("{} , {}, {}, {}".format(
+            r['data'][i]['id'], r['data'][i]['name'], r['data'][i]['type'], r['data'][i]['audience_size'])
+        )
+
+    return json.dumps(response)
 
 
 if __name__ == '__main__':

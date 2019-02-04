@@ -1,0 +1,55 @@
+<html>
+<head>
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" />
+</head>
+<body>
+
+<div class="container">
+    <div class="form-group">
+        <label>Search City or Country:</label><br> <input type="text" id="hint" class="form-control" name="hint" />
+
+        <div id="tagsname"></div>
+    </div>
+    <br><br>
+    <div class="form-group">
+        <label>Search Interests:</label><br> <input type="text" id="interest" class="form-control" name="interest" />
+
+        <div id="interests"></div>
+    </div>
+
+
+</div>
+
+<script type="text/javascript">
+
+    $(function() {
+        $("#hint").autocomplete({
+            source: "/search-city",
+            select: function( event, ui ) {
+
+                event.preventDefault();
+                $("#hint").val(ui.item.name );
+                $('#tagsname').append('<br>You selected: ' + ui.item.value);
+            }
+        });
+
+        $("#interest").autocomplete({
+            source: "/search-interest",
+            select: function( event, ui ) {
+
+                event.preventDefault();
+
+                $("#interest").val(ui.item.name );
+                $('#interests').append('<br>Your selected Interest: ' + ui.item.value);
+            }
+        });
+    });
+</script>
+</body>
+</html>
