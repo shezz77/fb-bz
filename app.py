@@ -119,6 +119,27 @@ class FbTargeting(db.Model):
     country_name = db.Column(db.String(50), nullable=True)
     audience_size = db.Column(db.String(50), nullable=True)
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'db_type': self.db_type,
+            'common_name': self.common_name,
+            'section_id': self.section_id,
+            'section_name': self.section_name,
+            'field_id': self.field_id,
+            'field_name': self.field_name,
+            'type': self.type,
+            'path': self.path,
+            'name': self.name,
+            'city_id': self.city_id,
+            'city': self.city,
+            'region_id': self.region_id,
+            'region': self.region,
+            'country_code': self.country_code,
+            'country_name': self.country_name,
+            'audience_size': self.audience_size,
+        }
+
 
 @app.route('/')
 def hello_world():
@@ -335,25 +356,47 @@ def get_target_audience(search_ad_account_id, response, q):
 
 @app.route('/search-city')
 def search_city():
-    query = request.args.get('term')
+    response = dict()
+    query = request.args.get('q')
     r = requests.get(
         "https://graph.facebook.com/v2.10/search?access_token={}&type=adgeolocation&q={}".format(
             app.config['access_token'],
             query
         )).json()
+    db_search = FbTargeting.query.filter(FbTargeting.field_name.like('%'+query+'%')).all()
+    response['local'] = [obj.serialize() for obj in db_search]
+    response['facebook'] = r
+    return jsonify(response)
 
-    response = list()
-    if 'data' in r:
-        for i in range(len(r['data'])):
-            result = ''
-            if 'region' in r['data'][i]:
-                result = "{} , {}, {}".format(r['data'][i]['name'], r['data'][i]['region'], r['data'][i]['country_name'])
-            else:
-                result = "{} , {}".format(r['data'][i]['name'], r['data'][i]['country_name'])
 
-            response.append(result)
+@app.route('/select-location', methods=['POST'])
+def selected_location_save():
+    response = {
+        'message': 'Entry already added to db',
+        'added': False
+    }
+    selected_location_obj = request.json
+    fb_targeting = FbTargeting.query.filter_by(
+        field_name=selected_location_obj['name'],
+        type=selected_location_obj['type']).first()
 
-    return json.dumps(response)
+    if not fb_targeting:
+        fb_targeting = FbTargeting(
+            section_id="sec:loc",
+            section_name="location",
+            field_id=selected_location_obj['name'][:3],
+            field_name=selected_location_obj['name'],
+            type=selected_location_obj['type'],
+            region_id=selected_location_obj['region_id'],
+            region=selected_location_obj['region'],
+            country_code=selected_location_obj['country_code'],
+            country_name=selected_location_obj['country_name']
+        )
+        db.session.add(fb_targeting)
+        db.session.commit()
+        response['message'] = "New entry added"
+        response['added'] = True
+    return jsonify(response)
 
 
 @app.route('/search-interest')

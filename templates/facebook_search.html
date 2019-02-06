@@ -1,55 +1,64 @@
 <html>
 <head>
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <title>Targeting Search</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
+    <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" type="text/javascript"></script>
+
+
 </head>
 <body>
-
 <div class="container">
-    <div class="form-group">
-        <label>Search City or Country:</label><br> <input type="text" id="hint" class="form-control" name="hint" />
-
-        <div id="tagsname"></div>
-    </div>
-    <br><br>
-    <div class="form-group">
-        <label>Search Interests:</label><br> <input type="text" id="interest" class="form-control" name="interest" />
-
-        <div id="interests"></div>
-    </div>
-
-
+    <div id="app"></div>
 </div>
 
+
+
 <script type="text/javascript">
+    function locationSearch(e){
+        if (e.keyCode === 13) {
+            axios.get(`/search-city?q=${e.target.value}`)
+                .then(function (res) {
+                    console.log(res.data);
+                    if (res.data && res.data.data) {
+                        let fbLocationElement = $('#fb-location-results');
+                        fbLocationElement.empty();
+                        res.data.data.forEach(function (obj) {
+                            fbLocationElement.append(`<li id='${obj.key}' onclick='return locSelected(event)' class='location-result'>${obj.name} , ${obj.region ? obj.region + ',' : ''} ${obj.country_name}</li>`)
+                        })
+                    }
 
-    $(function() {
-        $("#hint").autocomplete({
-            source: "/search-city",
-            select: function( event, ui ) {
+                    localStorage.clear();
+                    localStorage.setItem('facebook-search-loc', JSON.stringify(res.data.data));
+                })
+        }
 
-                event.preventDefault();
-                $("#hint").val(ui.item.name );
-                $('#tagsname').append('<br>You selected: ' + ui.item.value);
-            }
+    }
+
+    function locSelected(e) {
+        let id = e.target.id;
+        let locationResults = JSON.parse(localStorage.getItem('facebook-search-loc'));
+        let selectedLocationObj = locationResults.find(function (element) {
+            return element.key === id;
         });
 
-        $("#interest").autocomplete({
-            source: "/search-interest",
-            select: function( event, ui ) {
+        axios.post('/select-location', selectedLocationObj)
+            .then(function (res) {
+                if (res.data && res.data.added) {
+                    window.toastr.success(res.data.message)
+                } else {
+                    window.toastr.error(res.data.message)
+                }
 
-                event.preventDefault();
-
-                $("#interest").val(ui.item.name );
-                $('#interests').append('<br>Your selected Interest: ' + ui.item.value);
-            }
-        });
-    });
+            });
+        console.log(selectedLocationObj);
+    }
 </script>
+    <script src="{{ url_for('static', filename='bundle.js') }}"></script>
 </body>
 </html>
