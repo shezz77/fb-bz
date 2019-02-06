@@ -16,49 +16,6 @@
 <div class="container">
     <div id="app"></div>
 </div>
-
-
-
-<script type="text/javascript">
-    function locationSearch(e){
-        if (e.keyCode === 13) {
-            axios.get(`/search-city?q=${e.target.value}`)
-                .then(function (res) {
-                    console.log(res.data);
-                    if (res.data && res.data.data) {
-                        let fbLocationElement = $('#fb-location-results');
-                        fbLocationElement.empty();
-                        res.data.data.forEach(function (obj) {
-                            fbLocationElement.append(`<li id='${obj.key}' onclick='return locSelected(event)' class='location-result'>${obj.name} , ${obj.region ? obj.region + ',' : ''} ${obj.country_name}</li>`)
-                        })
-                    }
-
-                    localStorage.clear();
-                    localStorage.setItem('facebook-search-loc', JSON.stringify(res.data.data));
-                })
-        }
-
-    }
-
-    function locSelected(e) {
-        let id = e.target.id;
-        let locationResults = JSON.parse(localStorage.getItem('facebook-search-loc'));
-        let selectedLocationObj = locationResults.find(function (element) {
-            return element.key === id;
-        });
-
-        axios.post('/select-location', selectedLocationObj)
-            .then(function (res) {
-                if (res.data && res.data.added) {
-                    window.toastr.success(res.data.message)
-                } else {
-                    window.toastr.error(res.data.message)
-                }
-
-            });
-        console.log(selectedLocationObj);
-    }
-</script>
     <script src="{{ url_for('static', filename='bundle.js') }}"></script>
 </body>
 </html>

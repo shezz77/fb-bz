@@ -11,6 +11,13 @@ class App extends Component {
                 facebook: [],
                 local: []
             }
+        },
+        interestSearch: {
+            key: '',
+            results: {
+                facebook: [],
+                local: []
+            }
         }
     };
 
@@ -20,7 +27,6 @@ class App extends Component {
         if (this.state.locationSearch.key) {
             axios.get(`/search-city?q=${this.state.locationSearch.key}`)
                 .then(res => {
-                    console.log(res);
                     if (res.data) {
                         let {locationSearch} = this.state;
                         if (res.data.facebook && res.data.facebook.data) {
@@ -35,6 +41,25 @@ class App extends Component {
         }
     };
 
+      handleSearchInterest = () => {
+        if (this.state.interestSearch.key) {
+            axios.get(`/search-interest?q=${this.state.interestSearch.key}`)
+                .then(res => {
+                    console.log(res);
+                    if (res.data) {
+                        let {interestSearch} = this.state;
+                        if (res.data.facebook && res.data.facebook.data) {
+                            interestSearch.results.facebook = res.data.facebook.data
+                        }
+                        if (res.data.local) {
+                            interestSearch.results.local = res.data.local
+                        }
+                        this.setState({interestSearch})
+                    }
+                })
+        }
+    };
+
     render() {
         return (
             <div>
@@ -43,10 +68,11 @@ class App extends Component {
                     handleUpdateState={this.handleUpdateState}
                     handleSearchLocation={this.handleSearchLocation}
                 />
-                {/*<InterestSearch*/}
-                    {/*{...this.state}*/}
-                    {/*handleUpdateState={this.handleUpdateState}*/}
-                {/*/>*/}
+                <InterestSearch
+                    {...this.state}
+                    handleUpdateState={this.handleUpdateState}
+                    handleSearchInterest={this.handleSearchInterest}
+                />
             </div>
         );
     }

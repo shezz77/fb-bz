@@ -33,49 +33,76 @@ const LocationIndex = props => {
     };
 
     return (
-        <div className="row">
-            <div className="col-md-12">
-                <div className="row">
-                    <div className="form-group">
-                        <label>Search City or Country:</label><br/>
-                        <input onChange={handleSearch} onKeyUp={handleSearchSubmit} type="text" className="form-control"
-                               name="hint"/>
+         <React.Fragment>
+            <div className="row">
+                <div className="col-lg-12">
+                    <div className="page-header">
+                        <h1>Location Search</h1>
+                    </div>
+                    <div className="row">
+                        <div className="col-lg-6">
+                            <p>You can search from Country or City facebook and local</p>
+                        </div>
+                        <div className="col-lg-6">
+                            <input onChange={handleSearch} value={props.locationSearch.key} onKeyUp={handleSearchSubmit} type="text" className="form-control"
+                                   name="hint"/>
+                        </div>
+                    </div>
 
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-md-6">
-                        <h1>Result from Facebook</h1>
-                        <ul id="fb-location-results">
-                            {props.locationSearch.results.facebook && (
-                                props.locationSearch.results.facebook.map(obj => (
-                                    <li
-                                        key={obj.key}
-                                        onClick={() => handleSelectLocation(obj.key)}
-                                        style={{cursor: 'pointer'}}
-                                    >{`${obj.name}, ${obj.region ? obj.region + ',' : ''} ${obj.country_name}`}
-                                    </li>
-                                ))
-                            )}
-                        </ul>
-                    </div>
-                    <div className="col-md-6">
-                        <h1>Result from Local DB</h1>
-                        <ul id="fb-db-results">
-                            {props.locationSearch.results.local && (
-                                props.locationSearch.results.local.map((obj, index) => (
-                                    <li
-                                        key={index}
-                                    >{`${obj.field_name ? obj.field_name : obj.name}, ${obj.region ? obj.region + ',' : ''} ${obj.country_name}`}
-                                    </li>
-                                ))
-                            )}
-                        </ul>
-                    </div>
                 </div>
             </div>
+            <div className="row">
+                <div className="col-lg-6">
+                    <table className="table" id="table">
+                        <thead>
+                        <tr>
+                            <th>Facebook Results</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {props.locationSearch.results.facebook && props.locationSearch.results.facebook.length > 0 ? (
+                            props.locationSearch.results.facebook.map(obj => (
+                                <tr
+                                    key={obj.key}
+                                    onClick={() => handleSelectLocation(obj.key)}
+                                    style={{cursor: 'pointer'}}
+                                >
+                                    <td>{`${obj.name}, ${obj.region ? obj.region + ',' : ''} ${obj.country_name}`}</td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr><td>No Results</td></tr>
+                        )}
+                        </tbody>
+                    </table>
+                    <hr/>
+                </div>
 
-        </div>
+                <div className="col-lg-6">
+                    <table className="table" id="table">
+                        <thead>
+                        <tr>
+                            <th>Local Results</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {props.locationSearch.results.local && props.locationSearch.results.local.length > 0 ? (
+                            props.locationSearch.results.local.map((obj, index) => (
+                                <tr
+                                    key={index}
+                                ><td>{`${obj.field_name ? obj.field_name : obj.name}, ${obj.region ? obj.region + ',' : ''} ${obj.country_name}`}</td>
+                                </tr>
+                            ))
+                        ): (
+                            <tr><td>No Results</td></tr>
+                        )}
+                        </tbody>
+                    </table>
+                    <hr/>
+                </div>
+
+            </div>
+        </React.Fragment>
     );
 };
 

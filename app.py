@@ -401,7 +401,8 @@ def selected_location_save():
 
 @app.route('/search-interest')
 def search_interest():
-    q = request.args.get('term')
+    q = request.args.get('q')
+    response = dict()
     search_ad_account_id = '832687727072200'
     r = requests.get(
         "{}/act_{}/targetingsearch?access_token={}&q={}&fields=id,name,type,audience_size".format(
@@ -411,13 +412,36 @@ def search_interest():
             q
         )).json()
 
-    response = list()
-    for i in range(len(r['data'])):
-        response.append("{} , {}, {}, {}".format(
-            r['data'][i]['id'], r['data'][i]['name'], r['data'][i]['type'], r['data'][i]['audience_size'])
-        )
+    db_search = FbTargeting.query.filter(FbTargeting.field_name.like('%'+q+'%')).all()
+    response['local'] = [obj.serialize() for obj in db_search]
+    response['facebook'] = r
+    return jsonify(response)
 
-    return json.dumps(response)
+
+@app.route('/select-interest', methods=['POST'])
+def selected_interest_save():
+    response = {
+        'message': 'Entry already added to db',
+        'added': False
+    }
+    selected_interest_obj = request.json
+    fb_targeting = FbTargeting.query.filter_by(
+        field_name=selected_interest_obj['name'],
+        type=selected_interest_obj['type']).first()
+
+    if not fb_targeting:
+        fb_targeting = FbTargeting(
+            section_id="sec:loc",
+            section_name="interest",
+            field_id=selected_interest_obj['name'][:3],
+            field_name=selected_interest_obj['name'],
+            type=selected_interest_obj['type'],
+        )
+        db.session.add(fb_targeting)
+        db.session.commit()
+        response['message'] = "New entry added"
+        response['added'] = True
+    return jsonify(response)
 
 
 if __name__ == '__main__':
