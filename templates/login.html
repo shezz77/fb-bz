@@ -1,0 +1,95 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: ahmad
+ * Date: 07/02/2019
+ * Time: 2:06 PM
+ */
+//app_id : 366484310574194
+
+?>
+<html>
+<head>
+
+    <meta charset="utf-8">
+
+</head>
+<body>
+<div>
+    <button onclick="myFacebookLogin()" class="btn btn-facebook" type="button">Log In with Facebook</button>
+
+    <div>
+        <h2 id="account_name"></h2>
+        <h2 id="account_id"></h2>
+    </div>
+    <div id="ad">
+
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+    var ACCESS_TOKEN = "";
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId      : '366484310574194',
+            xfbml      : true,
+            version    : 'v3.2'
+        });
+    };
+
+
+    (function(d, s, id){
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+
+    function myFacebookLogin() {
+
+        FB.login(function(response)
+        {
+            //console.log(response);
+            if (response.authResponse)
+            {
+                console.log(response.authResponse.accessToken);
+                ACCESS_TOKEN = response.authResponse.accessToken;
+                getUserInformation();
+
+
+            }
+            else
+            {console.log('User cancelled login or did not fully authorize.');
+            }
+
+        }, {scope: 'email,ads_management,ads_read,business_management,manage_pages,publish_pages',return_scopes: true});
+
+        function getUserInformation() {
+
+            FB.api('/me', { locale: 'en_US' },
+
+                function(response) {
+
+                //console.log(response);
+
+                $("#account_name").html("Account Name : "+response.name);
+                $("#account_id").html("Account ID : "+ response.id);
+
+                getFacebookAdAcounts(ACCESS_TOKEN,response.id);
+
+
+
+                });
+        }
+
+        function getFacebookAdAcounts(access_token,id)
+        {
+            window.location.href = `user-info?access_token=${access_token}&id=${id}`;
+        }
+    }
+</script>
+</body>
+</html>

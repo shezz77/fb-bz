@@ -13,13 +13,13 @@
 <div class="container"><br><br>
 
 
-    <div class="form-group">
-        <label for="search">Search Ad Account :</label>
-        <input type="text" class="form-control search" id="search"  placeholder="Enter Ad Account ID">
-        <small id="emailHelp" class="form-text text-muted">Press Enter For Search Ad Account ID</small>
-{#        <input type="text" class="form-control search" id="q"  placeholder="Enter Interest">#}
-{#        <small id="emailHelp" class="form-text text-muted">Press Enter For Interests</small>#}
-    </div>
+{#    <div class="form-group">#}
+{#        <label for="search">Search Ad Account :</label>#}
+{#        <input type="text" class="form-control search" id="search"  placeholder="Enter Ad Account ID">#}
+{#        <small id="emailHelp" class="form-text text-muted">Press Enter For Search Ad Account ID</small>#}
+        {#        <input type="text" class="form-control search" id="q"  placeholder="Enter Interest">#}
+        {#        <small id="emailHelp" class="form-text text-muted">Press Enter For Interests</small>#}
+{#    </div>#}
 
     <div id="data"></div>
 
@@ -27,58 +27,43 @@
 
 <script type="text/javascript">
 
-    $('.search').keyup(function(event)
-    {
+    $(document).on('ready', function () {
+        $.ajax({
+            url:"/get-facebook-id-info",
+            method:"get",
+            success:function(data) {
+                let parsedData = data;
+                let div = document.createElement('div');
+                if (parsedData) {
+                    Object.keys(parsedData).forEach(function (key) {
+                        let h2 = document.createElement('h2');
+                        h2.innerHTML = key;
+                        {#console.log(parsedData[key]);#}
+                        div.appendChild(h2);
+                        if (parsedData[key].length > 0){
+                            parsedData[key].forEach(function (obj) {
+                                let h4 = document.createElement('h4');
+                                Object.keys(obj).forEach(function (key3) {
+                                    let span1 = document.createElement('span');
+                                    let span2 = document.createElement('span');
+                                    span1.innerHTML = `${key} ${key3} : `;
+                                    span2.innerHTML = obj[key3];
+                                    h4.appendChild(span1);
+                                    h4.appendChild(span2);
+                                    h4.appendChild(document.createElement('br'));
+                                });
 
-        if(event.keyCode === 13){
-            var txt = $('#search').val();
-            {#var q = $('#q').val();#}
-            if(txt !== '')
-            {
-
-                $.ajax({
-                    url:"/get-facebook-id-info",
-                    method:"post",
-                    data:{search:txt},
-                    dataType:"text",
-                    success:function(data) {
-                        let parsedData = JSON.parse(data);
-                        let div = document.createElement('div');
-                        if (parsedData) {
-                            Object.keys(parsedData).forEach(function (key) {
-                                let h2 = document.createElement('h2');
-                                h2.innerHTML = key;
-                                {#console.log(parsedData[key]);#}
-                                div.appendChild(h2);
-                                if (parsedData[key].length > 0){
-                                    parsedData[key].forEach(function (obj) {
-                                        let h4 = document.createElement('h4');
-                                        Object.keys(obj).forEach(function (key3) {
-                                            let span1 = document.createElement('span');
-                                            let span2 = document.createElement('span');
-                                            span1.innerHTML = `${key} ${key3} : `;
-                                            span2.innerHTML = obj[key3];
-                                            h4.appendChild(span1);
-                                            h4.appendChild(span2);
-                                            h4.appendChild(document.createElement('br'));
-                                        });
-
-                                        div.appendChild(h4);
-                                    })
-                                }
-
-                            });
-                        } else  {
-                            div.innerHTML = "No Data found"
+                                div.appendChild(h4);
+                            })
                         }
 
-
-                        $("#data").html(div);
-                    }
-                });
+                    });
+                } else  {
+                    div.innerHTML = "No Data found"
+                }
+                $("#data").html(div);
             }
-
-        }
+        });
     });
 </script>
 </body>
