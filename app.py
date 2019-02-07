@@ -21,15 +21,15 @@ POSTGRES = {
 app.config['SECRET_KEY'] = 'this_is_secret_key'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://cbymbzyosnqsdg:045013faa43ffb6466cd3b5e6fd0ae328930ac8f3d0de8dc96bdff79c74cbfe8@ec2-107-22-162-8.compute-1.amazonaws.com:5432/devgm2sk4pajqt'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://cbymbzyosnqsdg:045013faa43ffb6466cd3b5e6fd0ae328930ac8f3d0de8dc96bdff79c74cbfe8@ec2-107-22-162-8.compute-1.amazonaws.com:5432/devgm2sk4pajqt'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://{}:{}@{}:{}/{}".format(
-    POSTGRES['user'],
-    POSTGRES['pw'],
-    POSTGRES['host'],
-    POSTGRES['port'],
-    POSTGRES['db']
-)
+# app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://{}:{}@{}:{}/{}".format(
+#     POSTGRES['user'],
+#     POSTGRES['pw'],
+#     POSTGRES['host'],
+#     POSTGRES['port'],
+#     POSTGRES['db']
+# )
 app.config['DEBUG'] = True
 
 db = SQLAlchemy(app)
