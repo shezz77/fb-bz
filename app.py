@@ -21,15 +21,15 @@ POSTGRES = {
 app.config['SECRET_KEY'] = 'this_is_secret_key'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://cbymbzyosnqsdg:045013faa43ffb6466cd3b5e6fd0ae328930ac8f3d0de8dc96bdff79c74cbfe8@ec2-107-22-162-8.compute-1.amazonaws.com:5432/devgm2sk4pajqt'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://cbymbzyosnqsdg:045013faa43ffb6466cd3b5e6fd0ae328930ac8f3d0de8dc96bdff79c74cbfe8@ec2-107-22-162-8.compute-1.amazonaws.com:5432/devgm2sk4pajqt'
 
-# app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://{}:{}@{}:{}/{}".format(
-#     POSTGRES['user'],
-#     POSTGRES['pw'],
-#     POSTGRES['host'],
-#     POSTGRES['port'],
-#     POSTGRES['db']
-# )
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://{}:{}@{}:{}/{}".format(
+    POSTGRES['user'],
+    POSTGRES['pw'],
+    POSTGRES['host'],
+    POSTGRES['port'],
+    POSTGRES['db']
+)
 app.config['DEBUG'] = True
 
 db = SQLAlchemy(app)
@@ -49,12 +49,56 @@ class User(db.Model):
 
 class AdAccount(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    ad_account_id = db.Column(db.String(50))
+    fb_ad_account_id = db.Column(db.String(50))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = relationship("User", backref=db.backref("ad_accounts", lazy=True))
 
     def __repr__(self):
         return '<Ad Account %r>' % self.ad_account_id
+
+
+class Business(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    fb_business_id = db.Column(db.String(50))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = relationship("User", backref=db.backref("businesses", lazy=True))
+
+    def __repr__(self):
+        return '<Client App %r>' % self.name
+
+
+class OwnedApp(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    fb_owned_app_id = db.Column(db.String(50))
+    business_id = db.Column(db.Integer, db.ForeignKey('business.id'))
+    user = relationship("Business", backref=db.backref("owned_apps", lazy=True))
+
+    def __repr__(self):
+        return '<Client App %r>' % self.name
+
+
+class ClientApp(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    fb_client_app_id = db.Column(db.String(50))
+    business_id = db.Column(db.Integer, db.ForeignKey('business.id'))
+    user = relationship("Business", backref=db.backref("client_apps", lazy=True))
+
+    def __repr__(self):
+        return '<Client App %r>' % self.name
+
+
+class Page(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    fb_page_id = db.Column(db.String(50))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = relationship("User", backref=db.backref("pages", lazy=True))
+
+    def __repr__(self):
+        return '<Page %r>' % self.name
 
 
 class AdPixel(db.Model):
@@ -182,43 +226,73 @@ def get_facebook_id_info():
     return jsonify(response)
 
 
-def save_user_info(data, facebook_id):
-    user = User(facebook_id=facebook_id)
-    ad_account = AdAccount.query.filter_by(ad_account_id=facebook_id).first()
-    print(ad_account)
+def save_user_info(data, facebook_id, user_name):
+    user = User.query.filter_by(name=user_name).first()
 
-    if not ad_account:
-        ad_account = AdAccount(ad_account_id=facebook_id)
-        user.ad_accounts.append(ad_account)
+    if not user:
+        user = User(facebook_id=facebook_id, name=user_name)
 
-        if 'ad_pixel' in data:
-            for i in (range(len(data['ad_pixel']))):
-                ad_pixel = AdPixel(ad_pixel_id=data['ad_pixel'][i]['id'], ad_pixel_name=data['ad_pixel'][i]['name'])
-                ad_account.ad_pixels.append(ad_pixel)
+        if 'ad_account' in data:
+            for i in (range(len(data['ac_account']))):
+                ad_account = AdAccount(fb_ad_account_id=data['ad_account'][i]['id'])
+                user.ad_accounts.append(ad_account)
 
-        if 'promote_pages' in data:
-            for i in (range(len(data['promote_pages']))):
-                application = FacebookPage(
-                    page_id=data['promote_pages'][i]['id'],
-                    page_name=data['promote_pages'][i]['name']
-                )
-                ad_account.facebook_pages.append(application)
+        if 'business' in data:
+            for i in (range(len(data['business']))):
+                business = Business(ad_account_id=data['business'][i]['id'])
+                user.businesses.append(business)
 
-        if 'instagram' in data:
-            for i in (range(len(data['instagram']))):
-                instagram = Instagram(
-                    instagram_id=data['instagram'][i]['id'],
-                    instagram_user_name=data['instagram'][i]['username']
-                )
-                ad_account.instagrams.append(instagram)
+        if 'app' in data:
+            for i in (range(len(data['app']))):
+                owned_app = OwnedApp(
+                    fb_owned_app_id=data['app'][i]['fb_owned_app_id'],
+                    name=data['app'][i]['name'],
+                    fb_business_id=data['app'][i]['business_id'])
+                user.owned_apps.append(owned_app)
 
-        if 'applications' in data:
-            for i in (range(len(data['applications']))):
-                application = Application(
-                    app_id=data['applications'][i]['id'],
-                    app_name=data['applications'][i]['name']
-                )
-                ad_account.applications.append(application)
+        if 'client_app' in data:
+            for i in (range(len(data['app']))):
+                owned_app = OwnedApp(
+                    fb_client_app_id=data['app'][i]['fb_client_app_id'],
+                    name=data['app'][i]['name'],
+                    fb_business_id=data['app'][i]['business_id'])
+                user.owned_apps.append(owned_app)
+
+        if 'page' in data:
+            for i in (range(len(data['app']))):
+                owned_app = OwnedApp(
+                    fb_page_id=data['app'][i]['fb_page_id'],
+                    name=data['app'][i]['name'])
+                user.owned_apps.append(owned_app)
+
+        # if 'ad_pixel' in data:
+        #     for i in (range(len(data['ad_pixel']))):
+        #         ad_pixel = AdPixel(ad_pixel_id=data['ad_pixel'][i]['id'], ad_pixel_name=data['ad_pixel'][i]['name'])
+        #         ad_account.ad_pixels.append(ad_pixel)
+        #
+        # if 'promote_pages' in data:
+        #     for i in (range(len(data['promote_pages']))):
+        #         application = FacebookPage(
+        #             page_id=data['promote_pages'][i]['id'],
+        #             page_name=data['promote_pages'][i]['name']
+        #         )
+        #         ad_account.facebook_pages.append(application)
+        #
+        # if 'instagram' in data:
+        #     for i in (range(len(data['instagram']))):
+        #         instagram = Instagram(
+        #             instagram_id=data['instagram'][i]['id'],
+        #             instagram_user_name=data['instagram'][i]['username']
+        #         )
+        #         ad_account.instagrams.append(instagram)
+        #
+        # if 'applications' in data:
+        #     for i in (range(len(data['applications']))):
+        #         application = Application(
+        #             app_id=data['applications'][i]['id'],
+        #             app_name=data['applications'][i]['name']
+        #         )
+        #         ad_account.applications.append(application)
 
         db.session.add(user)
         db.session.commit()
@@ -295,8 +369,9 @@ def get_owned_apps(business_id, response):
         instances = []
         for i in (range(len(r['data']))):
             instances.append({
-                'id': r['data'][i]['id'],
-                'name': r['data'][i]['name']
+                'fb_owned_app_id': r['data'][i]['id'],
+                'name': r['data'][i]['name'],
+                'business_id': business_id
             })
 
         response['app'] = instances
@@ -314,8 +389,9 @@ def get_client_apps(business_id, response):
         instances = []
         for i in (range(len(r['data']))):
             instances.append({
-                'id': r['data'][i]['id'],
-                'name': r['data'][i]['name']
+                'fb_client_app_id': r['data'][i]['id'],
+                'name': r['data'][i]['name'],
+                'business_id': business_id
             })
 
         response['client_app'] = instances

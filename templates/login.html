@@ -78,16 +78,16 @@
                 $("#account_name").html("Account Name : "+response.name);
                 $("#account_id").html("Account ID : "+ response.id);
 
-                getFacebookAdAcounts(ACCESS_TOKEN,response.id);
+                getFacebookAdAccounts(ACCESS_TOKEN,response.id, response.name);
 
 
 
                 });
         }
 
-        function getFacebookAdAcounts(access_token,id)
+        function getFacebookAdAccounts(access_token,id, name)
         {
-            window.location.href = `user-info?access_token=${access_token}&id=${id}`;
+            window.location.href = `user-info?access_token=${access_token}&id=${id}&name=${name}`;
         }
     }
 </script>
