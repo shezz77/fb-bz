@@ -13,7 +13,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/fb_bz$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1549737513431" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/fb_bz$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1549744477756" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/untitled$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1548712942077" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
   <component name="FUSProjectUsageTrigger">
@@ -74,22 +74,22 @@
           <entry key="Python Console" value="39" />
           <entry key="babelrc" value="2" />
           <entry key="gitignore" value="15" />
-          <entry key="html" value="2122" />
+          <entry key="html" value="2131" />
           <entry key="js" value="794" />
           <entry key="json" value="1" />
           <entry key="jsx" value="419" />
-          <entry key="py" value="4251" />
-          <entry key="txt" value="109" />
+          <entry key="py" value="4380" />
+          <entry key="txt" value="120" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="HTML" value="2122" />
+          <entry key="HTML" value="2131" />
           <entry key="JSON" value="3" />
           <entry key="JSX Harmony" value="419" />
           <entry key="JavaScript" value="794" />
-          <entry key="PLAIN_TEXT" value="125" />
-          <entry key="Python" value="4290" />
+          <entry key="PLAIN_TEXT" value="136" />
+          <entry key="Python" value="4419" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -102,9 +102,9 @@
           <entry key="js" value="7" />
           <entry key="json" value="3" />
           <entry key="jsx" value="3" />
-          <entry key="py" value="16" />
+          <entry key="py" value="17" />
           <entry key="ts" value="1" />
-          <entry key="txt" value="3" />
+          <entry key="txt" value="4" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
@@ -114,8 +114,8 @@
           <entry key="JSON" value="4" />
           <entry key="JSX Harmony" value="3" />
           <entry key="JavaScript" value="7" />
-          <entry key="PLAIN_TEXT" value="7" />
-          <entry key="Python" value="16" />
+          <entry key="PLAIN_TEXT" value="8" />
+          <entry key="Python" value="17" />
           <entry key="TypeScript" value="1" />
         </counts>
       </usages-collector>
@@ -125,7 +125,7 @@
     <favorites_list name="fb-bz" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5538462">
+    <splitter split-orientation="horizontal" split-proportion="0.48906884">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="false">
@@ -152,8 +152,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/templates/login.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="259">
-                  <caret line="85" column="9" lean-forward="true" selection-start-line="85" selection-start-column="9" selection-end-line="85" selection-end-column="9" />
+                <state relative-caret-position="1309">
+                  <caret line="89" column="93" selection-start-line="89" selection-start-column="93" selection-end-line="89" selection-end-column="93" />
                 </state>
               </provider>
             </entry>
@@ -161,10 +161,10 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/app.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="463">
-                  <caret line="268" column="24" lean-forward="true" selection-start-line="268" selection-start-column="24" selection-end-line="268" selection-end-column="24" />
+                <state relative-caret-position="28">
+                  <caret line="257" column="48" selection-start-line="257" selection-start-column="48" selection-end-line="257" selection-end-column="48" />
                   <folding>
-                    <marker date="1549740938999" expanded="true" signature="1913:3398" ph="..." />
+                    <marker date="1549744151205" expanded="true" signature="1913:3460" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -177,10 +177,10 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/app.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="272">
-                  <caret line="95" column="14" selection-start-line="95" selection-start-column="4" selection-end-line="95" selection-end-column="14" />
+                <state relative-caret-position="86">
+                  <caret line="80" lean-forward="true" selection-start-line="80" selection-end-line="80" />
                   <folding>
-                    <marker date="1549740938999" expanded="true" signature="1913:3398" ph="..." />
+                    <marker date="1549744151205" expanded="true" signature="1913:3460" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -225,7 +225,6 @@
         <option value="$PROJECT_DIR$/extensions.py" />
         <option value="$PROJECT_DIR$/models.py" />
         <option value="$PROJECT_DIR$/manage.py" />
-        <option value="$PROJECT_DIR$/requirements.txt" />
         <option value="$PROJECT_DIR$/Procfile" />
         <option value="$PROJECT_DIR$/static/.babelrc" />
         <option value="$PROJECT_DIR$/static/react/components/index.js" />
@@ -249,6 +248,7 @@
         <option value="$PROJECT_DIR$/src/components/locations/index.js" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/templates/index.html" />
+        <option value="$PROJECT_DIR$/requirements.txt" />
         <option value="$PROJECT_DIR$/templates/login.html" />
         <option value="$PROJECT_DIR$/app.py" />
       </list>
@@ -441,19 +441,26 @@
       <option name="project" value="LOCAL" />
       <updated>1549576843350</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Db updated">
+      <created>1549741670172</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1549741670172</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.499388" weight="0.20323886" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.499388" weight="0.20242915" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" sideWeight="0.500612" side_tool="true" weight="0.118336886" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.329718" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.23309608" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.37366548" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -462,7 +469,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.19395018" />
+      <window_info anchor="bottom" id="Terminal" order="11" weight="0.430605" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.329718" />
       <window_info anchor="bottom" id="Messages" order="13" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -484,7 +491,8 @@
     <MESSAGE value="condition added" />
     <MESSAGE value="database" />
     <MESSAGE value="login with facebook added" />
-    <option name="LAST_COMMIT_MESSAGE" value="login with facebook added" />
+    <MESSAGE value="Db updated" />
+    <option name="LAST_COMMIT_MESSAGE" value="Db updated" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external/lib.dom.d.ts">
@@ -522,13 +530,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
           <caret line="1" selection-start-line="1" selection-end-line="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="18" selection-start-line="18" selection-end-line="18" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -629,17 +630,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/login.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="259">
-          <caret line="85" column="9" lean-forward="true" selection-start-line="85" selection-start-column="9" selection-end-line="85" selection-end-column="9" />
+        <state relative-caret-position="1309">
+          <caret line="89" column="93" selection-start-line="89" selection-start-column="93" selection-end-line="89" selection-end-column="93" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="18" column="13" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="13" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="463">
-          <caret line="268" column="24" lean-forward="true" selection-start-line="268" selection-start-column="24" selection-end-line="268" selection-end-column="24" />
+        <state relative-caret-position="86">
+          <caret line="80" lean-forward="true" selection-start-line="80" selection-end-line="80" />
           <folding>
-            <marker date="1549740938999" expanded="true" signature="1913:3398" ph="..." />
+            <marker date="1549744151205" expanded="true" signature="1913:3460" ph="..." />
           </folding>
         </state>
       </provider>

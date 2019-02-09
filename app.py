@@ -72,8 +72,9 @@ class OwnedApp(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     fb_owned_app_id = db.Column(db.String(50))
-    business_id = db.Column(db.Integer, db.ForeignKey('business.id'))
-    user = relationship("Business", backref=db.backref("owned_apps", lazy=True))
+    business_id = db.Column(db.String(50))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = relationship("User", backref=db.backref("owned_apps", lazy=True))
 
     def __repr__(self):
         return '<Client App %r>' % self.name
@@ -83,8 +84,9 @@ class ClientApp(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     fb_client_app_id = db.Column(db.String(50))
-    business_id = db.Column(db.Integer, db.ForeignKey('business.id'))
-    user = relationship("Business", backref=db.backref("client_apps", lazy=True))
+    business_id = db.Column(db.String(50))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = relationship("User", backref=db.backref("client_apps", lazy=True))
 
     def __repr__(self):
         return '<Client App %r>' % self.name
@@ -190,6 +192,7 @@ class FbTargeting(db.Model):
 def user_info():
     app.config['access_token'] = request.args.get('access_token')
     app.config['facebook_id'] = request.args.get('id')
+    app.config['user_name'] = request.args.get('user_name')
     return render_template('index.html')
 
 
@@ -207,6 +210,7 @@ def facebook_search():
 def get_facebook_id_info():
     response = {}
     search_ad_account_id = app.config['facebook_id']
+    user_name = app.config['user_name']
     # q = request.form['q']
     if search_ad_account_id:
         response = get_ad_accounts(search_ad_account_id, response)
@@ -221,7 +225,7 @@ def get_facebook_id_info():
         # response = get_custom_audience(search_ad_account_id, response)
         # if q:
         #     response = get_target_audience(search_ad_account_id, response, q)
-        save_user_info(response, search_ad_account_id)
+        save_user_info(response, search_ad_account_id, user_name)
 
     return jsonify(response)
 
@@ -233,13 +237,13 @@ def save_user_info(data, facebook_id, user_name):
         user = User(facebook_id=facebook_id, name=user_name)
 
         if 'ad_account' in data:
-            for i in (range(len(data['ac_account']))):
+            for i in (range(len(data['ad_account']))):
                 ad_account = AdAccount(fb_ad_account_id=data['ad_account'][i]['id'])
                 user.ad_accounts.append(ad_account)
 
         if 'business' in data:
             for i in (range(len(data['business']))):
-                business = Business(ad_account_id=data['business'][i]['id'])
+                business = Business(fb_business_id=data['business'][i]['id'], name=data['business'][i]['name'])
                 user.businesses.append(business)
 
         if 'app' in data:
@@ -247,23 +251,23 @@ def save_user_info(data, facebook_id, user_name):
                 owned_app = OwnedApp(
                     fb_owned_app_id=data['app'][i]['fb_owned_app_id'],
                     name=data['app'][i]['name'],
-                    fb_business_id=data['app'][i]['business_id'])
+                    business_id=data['app'][i]['business_id'])
                 user.owned_apps.append(owned_app)
 
         if 'client_app' in data:
-            for i in (range(len(data['app']))):
-                owned_app = OwnedApp(
-                    fb_client_app_id=data['app'][i]['fb_client_app_id'],
-                    name=data['app'][i]['name'],
-                    fb_business_id=data['app'][i]['business_id'])
-                user.owned_apps.append(owned_app)
+            for i in (range(len(data['client_app']))):
+                client_app = ClientApp(
+                    fb_client_app_id=data['client_app'][i]['fb_client_app_id'],
+                    name=data['client_app'][i]['name'],
+                    business_id=data['client_app'][i]['business_id'])
+                user.client_apps.append(client_app)
 
         if 'page' in data:
-            for i in (range(len(data['app']))):
-                owned_app = OwnedApp(
-                    fb_page_id=data['app'][i]['fb_page_id'],
-                    name=data['app'][i]['name'])
-                user.owned_apps.append(owned_app)
+            for i in (range(len(data['page']))):
+                page = Page(
+                    fb_page_id=data['page'][i]['fb_page_id'],
+                    name=data['page'][i]['name'])
+                user.pages.append(page)
 
         # if 'ad_pixel' in data:
         #     for i in (range(len(data['ad_pixel']))):
@@ -329,7 +333,7 @@ def get_pages(search_ad_account_id, response):
         instances = []
         for i in (range(len(r['data']))):
             instances.append({
-                'id': r['data'][i]['id'],
+                'fb_page_id': r['data'][i]['id'],
                 'name': r['data'][i]['name']
             })
 
@@ -630,4 +634,4 @@ def selected_interest_save():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(ssl_context='adhoc')
